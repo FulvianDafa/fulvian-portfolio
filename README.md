@@ -1,67 +1,49 @@
-# Portfolio Fulvian
+# Fulvian — Portfolio V2
 
-Kode sumber portfolio Mochammad Fulvian Dafa Pranaja. Situs ini memuat filter proyek, dialog detail, tab penelitian, bagian skills, pengalaman, dan kontak.
+Personal editorial portfolio Mochammad Fulvian Dafa Pranaja: software engineering, analysis, quality, dan delivery. Dibangun di repository existing menggunakan React, TypeScript, Tailwind, komponen Radix/Shadcn, serta Vinext/Cloudflare.
 
-## Mulai di komputer sendiri
+## Menjalankan lokal
 
-1. Ekstrak ZIP ini.
-2. Buka folder `fulvian-portfolio` di VS Code.
-3. Pastikan Node.js minimal **22.13.0** sudah terpasang.
-4. Buka terminal VS Code. Pasang pnpm jika belum tersedia:
-
-```sh
-npm install -g pnpm@11.25.0
-```
-
-5. Jalankan dari folder proyek:
+Gunakan Node.js **22.13.0 atau lebih baru** dan pnpm **11.25.0**.
 
 ```sh
 pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Buka alamat yang muncul di terminal; konfigurasi pengembangan menggunakan `http://localhost:5173`. Saat file disimpan, halaman akan diperbarui selama server pengembangan masih berjalan. Tekan `Ctrl+C` di terminal untuk menghentikannya.
-
-Tidak perlu database atau API key untuk fitur portfolio yang sekarang.
-
-## File yang paling sering diedit
-
-| File | Isi |
-| --- | --- |
-| `app/page.tsx` | Teks, data proyek, penelitian, skills, pengalaman, kontak, serta interaksi halaman |
-| `app/globals.css` | Warna, ukuran teks, jarak, layout, animasi, dan tampilan mobile |
-| `app/layout.tsx` | Judul tab browser, deskripsi situs, bahasa halaman, dan metadata |
-| `public/favicon.svg` | Ikon pada tab browser |
-| `public/` | Tempat menambahkan foto dan aset lain |
-
-Lihat **PANDUAN-EDIT.md** untuk contoh perubahan.
-
-## Memeriksa hasil perubahan
+Buka `http://localhost:5173` atau URL yang dicetak terminal. Jika Vinext mendeteksi server proyek yang sudah berjalan, gunakan URL server tersebut. Portfolio ini tidak memerlukan database atau API key.
 
 ```sh
+pnpm lint
+pnpm exec tsc --noEmit --incremental false
 pnpm build
 pnpm start
 ```
 
-`pnpm build` membuat hasil di `dist/`. `pnpm start` menjalankan hasil tersebut secara lokal; gunakan alamat yang dicetak di terminal.
+`pnpm build` memakai script framework existing dan menghasilkan build Cloudflare Workers di `dist/`. `pnpm start` menjalankan build melalui Wrangler lokal; buka URL yang dicetak terminal. `dist/` bukan ekspor HTML statis biasa. Script `install:ci` merupakan helper lingkungan build asal.
 
-Pemeriksaan TypeScript tambahan:
+## Struktur konten dan komponen
 
-```sh
-pnpm exec tsc --noEmit
-```
+| Lokasi | Tanggung jawab |
+| --- | --- |
+| `app/page.tsx` | Komposisi beranda |
+| `components/portfolio/` | Header, hero, professional focus, work/filter, riset, pengalaman, skills, kontak, visual proyek, dan heading bersama |
+| `lib/portfolio/projects.ts` | Empat proyek, slug, peran, kontribusi, pendekatan, hasil, status, teknologi, dan preview opsional |
+| `lib/portfolio/profile.ts` | Identitas, kontak, foto/CV/LinkedIn opsional, domain kerja, dan skills |
+| `lib/portfolio/types.ts` | Tipe data proyek |
+| `app/projects/[slug]/page.tsx` | Halaman studi kasus berbasis data proyek |
+| `app/not-found.tsx` | Halaman 404 |
+| `app/globals.css` | Token desain, layout per bagian, breakpoint, focus, dan reduced motion |
+| `app/layout.tsx` | Metadata, bahasa, favicon, dan robots noindex/nofollow existing |
 
-## Teknologi
+Empat studi kasus tersedia di `/projects/lims`, `/projects/sapi-berkah-amanah`, `/projects/digital-archive`, dan `/projects/self-healing-selenium`. Detail menggunakan halaman khusus agar dapat ditautkan, dibuka kembali, dan dibaca tanpa batas tinggi dialog. Radix Dialog tetap dipakai untuk navigasi mobile; Radix Tabs untuk riset.
 
-React, TypeScript, Tailwind CSS, komponen Radix/Shadcn, dan Vinext dengan struktur App Router bergaya Next.js. Build produksi ditujukan untuk Cloudflare Workers; folder `dist/` bukan ekspor HTML statis biasa.
+## Aset dan integritas konten
 
-`pnpm-lock.yaml` disertakan supaya versi dependency dapat dipasang secara konsisten. Gunakan alur pnpm di atas. Script `install:ci` merupakan helper lingkungan build asal, bukan langkah instalasi lokal yang diperlukan.
+Foto belum tersedia. Hero memakai komposisi geometris CSS tanpa gambar pengganti. Simpan foto asli ke `public/images/profile-portrait.png`, lalu isi `profile.portrait.src` dengan `/images/profile-portrait.png`. Lihat [PANDUAN-EDIT.md](PANDUAN-EDIT.md) untuk pengaturan posisi, skala, screenshot, dan kontak.
 
-## Deployment
+Visual proyek saat ini adalah diagram CSS berlabel **CONCEPT DIAGRAM**, bukan screenshot produk. URL LinkedIn dan CV tetap kosong sampai data/aset valid tersedia. GitHub mengarah ke repository yang diberikan dalam brief. Angka riset, pengalaman, dan kontribusi bersumber dari konten repository sebelum redesign.
 
-Proyek ini dapat dideploy ke Cloudflare Workers, Vercel, atau platform hosting modern lainnya.
+Konfigurasi framework, dependency aplikasi, Cloudflare, dan privacy/indexing dipertahankan. Implementasi ini tidak menjalankan commit, push, atau deployment publik.
 
-Untuk build produksi:
-```sh
-pnpm build
-```
+Catatan audit, keputusan desain, serta hasil verifikasi aktual ada di [VALIDASI-V2.md](VALIDASI-V2.md).

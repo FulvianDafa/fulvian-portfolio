@@ -1,0 +1,22 @@
+export type Project = {
+  id: string;
+  slug: string;
+  title: string;
+  category: string;
+  disciplines: string[];
+  context: string;
+  role: string;
+  roleDescription: string;
+  team?: string;
+  website?: string;
+  roadmap?: string;
+  summary: string;
+  tags: string[];
+  problem: string;
+  contribution: string[];
+  outcome: string;
+  note?: string;
+  approach: string;
+  status: string;
+  preview?: { src: string; alt: string; caption: string };
+};

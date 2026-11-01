@@ -1,104 +1,99 @@
-# Panduan edit portfolio
+# Panduan edit Portfolio V2
 
-## 1. Mengubah nama dan deskripsi
+## 1. Identitas, hero, dan kontak
 
-Buka `app/page.tsx`. Cari `Hi, I’m`, `hero-description`, atau nama lengkap untuk menemukan bagian perkenalan. Ubah teks di antara tag JSX, lalu simpan file.
+Edit `lib/portfolio/profile.ts` untuk nama, universitas, email, domain kerja, skills, dan tautan opsional. Teks pengantar utama berada di `components/portfolio/hero.tsx`; metadata ada di `app/layout.tsx`.
 
-Untuk judul pada tab browser dan deskripsi metadata, buka `app/layout.tsx` dan ubah `title` serta `description`.
+- `github` saat ini adalah URL repository yang diberikan dalam brief, dengan label GitHub / Source.
+- `linkedIn` dan `cv` bernilai `null`. Komponen menampilkan tautan hanya setelah nilainya diisi.
+- Untuk CV, simpan PDF asli misalnya di `public/documents/fulvian-cv.pdf`, lalu set `cv: "/documents/fulvian-cv.pdf"`. Buka file tersebut untuk memeriksa isi sebelum mengaktifkan tombol.
+- Isi `linkedIn` dengan URL profil asli yang sudah dikonfirmasi.
+- Email menggunakan `mailto:` dan membuka aplikasi email pengunjung. Tidak ada backend/form pengiriman.
 
-## 2. Mengubah atau menambah proyek
+Pertahankan robots `index: false, follow: false` sampai ada keputusan tersendiri untuk mengaktifkan indexing.
 
-Di bagian atas `app/page.tsx`, cari:
+## 2. Menambahkan foto profil
 
-```tsx
-const projects: Project[] = [
-```
+1. Buat folder `public/images` jika belum ada.
+2. Simpan foto milik sendiri sebagai `public/images/profile-portrait.png`. PNG/WebP dengan background transparan cocok untuk komposisi ini; tidak diperlukan gambar pengganti.
+3. Di `lib/portfolio/profile.ts`, ubah konfigurasi menjadi:
 
-Setiap objek merupakan satu proyek. Field utama:
-
-| Field | Fungsi |
-| --- | --- |
-| `id` | Nomor unik proyek, misalnya `"05"` |
-| `title` | Nama proyek |
-| `category` | Label jenis pekerjaan yang tampil pada kartu |
-| `disciplines` | Satu atau lebih kategori filter: `Delivery`, `Development`, `Quality`, atau `Research` |
-| `context` | Konteks singkat yang tampil di bagian atas kartu |
-| `role` | Peran kamu dalam proyek, jika relevan |
-| `team` | Ukuran tim yang telah dikonfirmasi, jika relevan |
-| `website` | URL publik proyek, jika tersedia |
-| `roadmap` | Fitur yang masih direncanakan, jika relevan |
-| `summary` | Deskripsi singkat di kartu |
-| `tags` | Daftar teknologi atau topik |
-| `problem` | Masalah yang diselesaikan |
-| `contribution` | Daftar pekerjaan yang kamu lakukan |
-| `outcome` | Hasil yang dapat dipertanggungjawabkan |
-| `note` | Konteks atau batasan hasil |
-
-Contoh pola untuk menambahkan proyek:
-
-```tsx
-{
-  id: "05",
-  title: "Nama proyekmu",
-  category: "Web development",
-  disciplines: ["Development"],
-  context: "Client project",
-  role: "Frontend Developer",
-  summary: "Ringkasan singkat proyekmu.",
-  tags: ["Teknologi yang digunakan"],
-  problem: "Masalah yang ingin diselesaikan.",
-  contribution: ["Pekerjaan yang kamu lakukan."],
-  outcome: "Hasil atau progres yang sudah ada.",
-  note: "Konteks yang relevan."
+```ts
+portrait: {
+  src: "/images/profile-portrait.png",
+  alt: "Portrait of Fulvian",
+  objectPosition: "center bottom",
+  scale: 1,
 },
 ```
 
-Hitungan proyek pada filter diperbarui otomatis. Jika menambah disiplin baru, tambahkan namanya juga ke daftar `filters` di bagian atas file. Hanya isi peran, ukuran tim, website, dan roadmap jika informasinya sudah terkonfirmasi.
+4. Buka `/images/profile-portrait.png` langsung pada server lokal untuk memastikan path benar.
+5. Periksa hero di desktop dan mobile. Foto memakai `object-fit: contain`, mengikuti tinggi slot, dan mempertahankan transparansi. `objectPosition` mengatur jangkar dalam slot; `scale` mengatur pembesaran dengan titik acuan tengah bawah. Mulai dari `scale: 1`; gunakan foto dengan ruang transparan berlebih yang sudah dirapikan bila perlu.
 
-## 3. Mengubah warna dan layout
+Slot desktop besar, tablet menyesuaikan dua kolom, dan mobile dibatasi 210–230 px agar halaman tanpa foto tetap proporsional. Tingginya diatur oleh `.portrait-stage` pada `app/globals.css`.
 
-Buka `app/globals.css`. Warna utama berada pada `:root`:
+Selama `src: null`, tidak ada request gambar atau broken image. Jika URL yang dikonfigurasi gagal dimuat, elemen foto dihapus dan komposisi CSS tetap tampil. Kegagalan path tetap perlu diperbaiki karena browser akan mencatat request gagal.
 
-```css
---background: #101210;
---foreground: #f1f3ec;
---primary: #c7f36b;
+## 3. Memperbarui proyek dan studi kasus
+
+Edit satu objek di `lib/portfolio/projects.ts`. Kartu dan halaman detail memakai data yang sama.
+
+| Field | Fungsi |
+| --- | --- |
+| `id`, `slug` | ID unik dan URL halaman; slug harus unik dan memakai huruf kecil/tanda hubung |
+| `title`, `category`, `context` | Judul, kategori, dan konteks |
+| `disciplines` | Filter: Delivery, Development, Quality, Research |
+| `role`, `roleDescription` | Peran dan batas kontribusi pribadi vs tim |
+| `team`, `website` | Opsional; isi hanya jika terkonfirmasi |
+| `summary`, `problem`, `approach` | Ringkasan, kebutuhan, dan pendekatan |
+| `contribution` | Daftar kontribusi pribadi |
+| `outcome`, `status`, `note` | Hasil, status/batasan terkini, catatan opsional |
+| `roadmap` | Fitur yang masih direncanakan, bukan hasil yang sudah dicapai |
+| `tags` | Teknologi/topik proyek; bukan klaim kepemilikan semua bagian |
+| `preview` | Screenshot asli opsional |
+
+Hitungan filter dan navigasi Next study mengikuti array proyek. Daftar filter berada di file yang sama. Visual CSS empat proyek berada di `components/portfolio/project-visual.tsx`; tambahkan komposisi sendiri bila menambah proyek baru.
+
+Jangan mengubah slug yang telah dibagikan tanpa mempertimbangkan tautan lama. URL yang tidak dikenal menampilkan halaman 404.
+
+## 4. Menambahkan screenshot asli
+
+Simpan misalnya `public/images/projects/lims-overview.png`. Tambahkan pada objek proyek:
+
+```ts
+preview: {
+  src: "/images/projects/lims-overview.png",
+  alt: "Deskripsi layar asli yang benar-benar ditampilkan",
+  caption: "Konteks screenshot dan bagian pekerjaan yang ditunjukkan.",
+},
 ```
 
-Beberapa aksen memakai warna langsung pada selector. Cari kode warna lama untuk mengganti aksen tersebut secara konsisten. Selector seperti `.hero`, `.project-grid`, `.project-card`, dan `.contact-layout` mengatur bagian halaman. Blok `@media` di bawah mengatur ukuran tablet dan mobile.
+Path pada `src` dimulai dari `/images/`, tanpa awalan `public/`. Komponen menampilkan preview yang sama pada kartu dan studi kasus dengan `object-fit: contain`; gambar tidak dipotong untuk memaksakan proporsi. Caption menjelaskan konteks. Gunakan screenshot yang boleh dibagikan, tanpa data sensitif. Buka URL aset langsung sebelum mengaktifkan konfigurasi.
 
-## 4. Mengubah skills, pengalaman, dan penelitian
+Jika `preview` tidak diisi, diagram CSS yang sengaja diberi label CONCEPT DIAGRAM tetap tampil. Diagram tersebut tidak dimaksudkan sebagai screenshot aplikasi.
 
-Semua berada di `app/page.tsx`. Cari `id="skills"`, `id="experience"`, atau `id="research"`.
+## 5. Pengalaman, skills, dan riset
 
-Angka penelitian muncul di beberapa tempat: hero, detail proyek, konteks Anugrah Jaya, dan tab Results. Jika hasil penelitian diperbarui, sesuaikan semua kemunculan agar konsisten. Jangan menyamakan Healing Success Rate dengan ketepatan kandidat; versi ini mencatat false positive secara terpisah.
+- Pengalaman terverifikasi: `components/portfolio/experience.tsx`. Tanggal tidak ditampilkan karena belum ada tanggal yang tersedia di baseline.
+- Empat kelompok skills: `lib/portfolio/profile.ts`.
+- Tab Method, Results, Limits dan konteks Anugrah Jaya: `components/portfolio/research.tsx`.
+- Outcome dan detail penelitian: objek riset di `lib/portfolio/projects.ts` dan bagian penjelasan metrik di `app/projects/[slug]/page.tsx`.
 
-## 5. Mengubah kontak
+Angka baseline: bobot text 50%, locator 30%, position 20%; threshold 0.50; 104 attempts, 96 accepted recoveries (HSR 92.31%), termasuk 11 false positives (FPR 11.46% dari accepted recoveries). Mean 11.77 s, median 5.80 s, 23 SUT; validasi dua praktisi 92.50%. Anugrah Jaya adalah subset 13 skenario, 0% false positives, mean 2,644.8 ms. Ubah semua kemunculan terkait hanya berdasarkan bukti penelitian baru, dan tetap bedakan recovery dengan ketepatan elemen.
 
-Cari email di `app/page.tsx`. Ubah **teks yang tampil dan nilai `mailto:`** pada tautan yang sama, misalnya:
+## 6. Mengubah desain dan memeriksa hasil
 
-```tsx
-<a href="mailto:alamat@example.com">...</a>
+Token warna berada di awal `app/globals.css`; bagian CSS dikelompokkan berdasarkan komponen dan breakpoint. Konfigurasi React/TypeScript, Vinext, Cloudflare, dan dependency existing tetap digunakan.
+
+Jalankan:
+
+```sh
+pnpm lint
+pnpm exec tsc --noEmit --incremental false
+pnpm build
+pnpm dev
 ```
 
-Alamat di atas hanya contoh; gunakan alamatmu sendiri. Situs tidak memiliki form pengiriman pesan. Tautan email membuka aplikasi email milik pengunjung.
+Periksa desktop 1440, laptop 1024, tablet 768, mobile 390 dan 360 px. Coba filter All/Delivery/Development/Quality/Research, setiap studi kasus dan tombol kembali, tab riset dengan panah keyboard, serta menu mobile dengan Tab dan Escape. Uji skip link, focus yang terlihat, reduced motion, tautan email, URL aset, console, dan horizontal overflow. Periksa ulang saat foto/screenshot ditambahkan.
 
-## 6. Menambahkan foto
-
-Simpan foto di `public/`, misalnya `public/foto-profil.jpg`, kemudian tempatkan elemen gambar pada posisi yang diinginkan di `app/page.tsx`:
-
-```tsx
-<img src="/foto-profil.jpg" alt="Foto Fulvian" width="400" height="400" />
-```
-
-Gunakan ukuran/aspect ratio yang sesuai, dan tambahkan aturan CSS agar gambar tidak melebar di mobile, misalnya `max-width: 100%; height: auto;`.
-
-## 7. Mengecek sebelum menyimpan versi final
-
-- Buka situs lokal di browser dan coba setiap filter serta detail proyek.
-- Periksa tab Method, Results, dan Limits.
-- Coba menu mobile dan pastikan halaman tidak perlu digeser horizontal.
-- Periksa email serta teks agar sesuai informasi terbaru.
-- Jalankan `pnpm build` setelah perubahan.
-
-Simpan cadangan proyek atau gunakan Git untuk melacak perubahan. Membuat ZIP baru dari folder sumber bisa menjadi cadangan sederhana; tidak perlu memasukkan `node_modules`, `dist`, atau cache.
+Lihat `VALIDASI-V2.md` untuk pemeriksaan yang benar-benar telah dijalankan pada implementasi ini.
